@@ -1,21 +1,22 @@
 import React, { useEffect, useRef } from 'react';
+import useTimeAgo from '../useTimeAgo';
 
 function Editor({ note, onUpdateNote }) {
     const titleRef = useRef(null);
     const contentRef = useRef(null);
+    const timeAgo = useTimeAgo(note?.lastEdited);
 
     useEffect(() => {
         if (!note) return;
 
-        // If title is default "Untitled Note", focus title so user can rename it
         if (note.title === 'Untitled Note') {
             titleRef.current?.focus();
-            titleRef.current?.select(); // select all so user can type right away
+            titleRef.current?.select();
         } else {
-            // Switching to an existing note — focus the content area
             contentRef.current?.focus();
         }
-    }, [note?.id]); // only re-run when the selected note changes, not on every keystroke
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [note?.id]);
 
     if (!note) {
         return (
@@ -46,6 +47,9 @@ function Editor({ note, onUpdateNote }) {
                     onChange={e => onUpdateNote(note.id, 'content', e.target.value)}
                     placeholder="Start writing your note here..."
                 />
+                <div className="editor-footer">
+                    🕐 Last edited {timeAgo}
+                </div>
             </div>
         </div>
     );
